@@ -1,50 +1,85 @@
 import streamlit as st
 from google import genai
 
-# Page configuration
+# 1. Page Configuration & Custom Theme Integration
 st.set_page_config(page_title="Citizen Fraud Shield", page_icon="🛡️", layout="centered")
 
-# Header Hero Banner
+# Eye-Catching Header Hero Banner using custom markdown cards
 st.markdown("""
-<div style="background-color: #1F2937; padding: 25px; border-radius: 12px;">
-    <h1 style="color: #FFFFFF; margin: 0; font-size: 2.2rem;">🛡️ Citizen Fraud Shield</h1>
-    <p style="color: #9CA3AF; margin: 8px 0 0 0; font-size: 1.1rem;">
-        Advanced AI Public Safety Interface against Organized Cyber-Scam Networks
-    </p>
-</div>
+    <div style="background-color: #1F2937; padding: 25px; border-radius: 12px; border-left: 6px solid #FF4B4B; margin-bottom: 25px;">
+        <h1 style="color: #FFFFFF; margin: 0; font-size: 2.2rem;">🛡️ Citizen Fraud Shield</h1>
+        <p style="color: #9CA3AF; margin: 8px 0 0 0; font-size: 1.1rem;">
+            Advanced AI Public Safety Interface against Organized Cyber-Scam Networks
+        </p>
+    </div>
 """, unsafe_allow_html=True)
 
-# Sidebar
+# 2. Sidebar Configuration Panel (API Input Removed)
 st.sidebar.markdown("""
-<div style="background-color: #111827; padding: 15px; border-radius: 8px;">
-    <h4 style="color: #FF4B4B; margin: 0 0 10px 0;">🛡️ System Status</h4>
-    <span style="color: #10B981; font-weight: bold;">● Core Defense Online</span>
-</div>
+    <div style="background-color: #111827; padding: 15px; border-radius: 8px; border: 1px solid #374151;">
+        <h4 style="color: #FF4B4B; margin: 0 0 10px 0;">🛡️ System Status</h4>
+        <span style="color: #10B981; font-weight: bold;">● Core Defense Online</span>
+    </div>
 """, unsafe_allow_html=True)
+st.sidebar.write("")
 
-st.sidebar.markdown("### Live Evaluation Focus")
-st.sidebar.markdown("* **Classification Target:** Organized Scam Rings")
-st.sidebar.markdown("* **Target Metric:** Zero False-Negatives")
-st.sidebar.markdown("* **Operational Mode:** Predictive Interception")
+# Hidden API Credential Variable (Safe from the UI)
+API_KEY = st.secrets["GEMINI_API_KEY"]
 
-# Main interface text container
+st.sidebar.markdown("""
+---
+### 📊 Live Evaluation Focus
+* **Classification Target:** Organized Scam Rings
+* **Target Metric:** Zero False-Negatives
+* **Operational Mode:** Predictive Interception
+""")
+
+# 3. Instruction Callout Box
+st.info("💡 Instructions: Copy and paste the suspicious text pattern, email body, or call log transcript below to execute an immediate safety forensic audit.")
+
+# 4. Main User Input Layout
 user_input = st.text_area(
     "📋 Input Investigation Payload:",
-    placeholder="Example: Someone claiming to be a CBI officer called saying my Aadhaar card is linked to an illegal parcel..."
+    placeholder="Example: Someone claiming to be a CBI officer called saying my Aadhaar card is linked to an illegal parcel...",
+    height=150
 )
 
-if st.button("Execute Forensic Scan"):
-    with st.spinner("Running heuristics matching against active scam database..."):
-        try:
-            # Modern initialization that supports AQ. keys perfectly
-            client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
-            
-            response = client.models.generate_content(
-                model='gemini-2.5-flash',
-                contents=user_input
-            )
-            
-            st.write(response.text)
+st.markdown("")
 
-        except Exception as e:
-            st.error(f"System core exception encountered during parsing run: {e}")
+# 5. Core System Prompt Logic Structure
+SYSTEM_INSTRUCTION = """
+You are an expert Cyber-Forensics Analyst and AI Investigator specialized in defeating digital fraud, 
+phishing schemes, and organized 'digital arrest' scam operations. Your primary objective is to analyze 
+user submissions for deceptive patterns, linguistic intimidation, fake authority cues, and illicit financial demands.
+
+Provide a highly scannable audit using bold Markdown badges and warning layouts. Avoid standard text blocks. Include:
+- **RISK VERDICT SCORE**: State the evaluation category instantly (e.g., [🚨 CRITICAL DANGER] or [🟢 SAFE]).
+- **SCAM TECHNIQUE PROFILE**: Match against known structural playbooks (e.g., Digital Arrest Scam).
+- **CRITICAL FORENSIC INDICATORS**: Provide a bulleted layout of exactly where they used deception or fear.
+- **IMMEDIATE CITIZEN DEFENSE PLAN**: Provide 3 tactical steps. Emphasize reporting to cybercrime.gov.in.
+"""
+
+# 6. Interactive Trigger Core
+if st.button(" Execute Forensic Scan", use_container_width=True):
+    if user_input.strip() == "":
+        st.warning(" Scanner Empty: Please provide a valid communication payload text sequence to analyze.")
+    else:
+        # Beautiful custom scan banner animation
+        with st.spinner("Running heuristics matching against active scam database..."):
+            try:
+                from google import genai
+            
+                # Initializing the modern client cleanly
+                client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
+            
+                # Executing the content generation
+                response = client.models.generate_content(
+                    model='gemini-2.5-flash',
+                    contents=user_input
+                )
+            
+                # Display the result
+                st.write(response.text)
+
+            except Exception as e:
+                st.error(f"System core exception encountered during parsing run: {e}")
