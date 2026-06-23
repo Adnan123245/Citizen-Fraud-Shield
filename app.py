@@ -1,6 +1,5 @@
 import streamlit as st
-import google.genai as genai
-from google.genai import types
+from google import genai
 
 # 1. Page Configuration & Custom Theme Integration
 st.set_page_config(page_title="Citizen Fraud Shield", page_icon="🛡️", layout="centered")
@@ -66,28 +65,21 @@ if st.button(" Execute Forensic Scan", use_container_width=True):
         st.warning(" Scanner Empty: Please provide a valid communication payload text sequence to analyze.")
     else:
         # Beautiful custom scan banner animation
-        with st.spinner(" Running heuristics matching against active scam databases..."):
+        with st.spinner("Running heuristics matching against active scam database..."):
             try:
-                # Initializing the client securely behind the scenes using our hidden variable
-                client = genai.Client(api_key=API_KEY)
-                
+            # Initializing the client securely behind the scenes
+                client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
+            
+            # Correctly indented and single-assignment call
                 response = client.models.generate_content(
                     model='gemini-2.5-flash',
-                    contents=user_input,
-                    config=types.GenerateContentConfig(
-                        system_instruction=SYSTEM_INSTRUCTION,
-                        temperature=0.2,
-                    )
+                    contents=user_input
                 )
-                
-                # Render beautifully segmented cards inside the layout
-                st.markdown("""
-                    <div style="background-color: #111827; padding: 15px; border-radius: 8px; border: 1px solid #10B981; margin-top: 20px; margin-bottom: 15px;">
-                        <span style="color: #10B981; font-weight: bold; font-size: 1.2rem;">⚡ Scan Matrix Analysis Complete</span>
-                    </div>
-                """, unsafe_allow_html=True)
-                
-                st.markdown(response.text)
-                
+            
+            # Make sure your st.write(response.text) is also indented here!
+                st.write(response.text)
+
             except Exception as e:
                 st.error(f"System core exception encountered during parsing run: {e}")
+                
+            
